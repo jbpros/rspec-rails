@@ -15,6 +15,7 @@ module Rspec
           :to_param => id.to_s,
           :new_record? => false,
           :persisted? => true,
+          :to_key => [id.to_s],
           :destroyed? => false,
           :marked_for_destruction? => false,
           :errors => stub("errors", :count => 0)
@@ -27,6 +28,7 @@ module Rspec
             self.stub(:to_param) { nil }
             self.stub(:new_record?) { true }
             self.stub(:persisted?) { false }
+            self.stub(:to_key) { nil }
             self
           end
           def @object.is_a?(other)
