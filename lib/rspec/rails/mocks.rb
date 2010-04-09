@@ -4,7 +4,7 @@ module Rspec
     class IllegalDataAccessException < StandardError; end
 
     module Mocks
-      
+
       # Creates a mock object instance for a +model_class+ with common
       # methods stubbed out. Additional methods may be easily stubbed (via
       # add_stubs) if +stubs+ is passed.
@@ -14,6 +14,7 @@ module Rspec
           :id => id,
           :to_param => id.to_s,
           :new_record? => false,
+          :persisted? => true,
           :destroyed? => false,
           :marked_for_destruction? => false,
           :errors => stub("errors", :count => 0)
@@ -25,6 +26,7 @@ module Rspec
             self.stub(:id) { nil }
             self.stub(:to_param) { nil }
             self.stub(:new_record?) { true }
+            self.stub(:persisted?) { false }
             self
           end
           def @object.is_a?(other)
@@ -46,13 +48,16 @@ module Rspec
         yield m if block_given?
         m
       end
-      
+
       module ModelStubber
         def connection
           raise Spec::Rails::IllegalDataAccessException.new("stubbed models are not allowed to access the database")
         end
         def new_record?
           id.nil?
+        end
+        def persisted?
+          !new_record?
         end
         def as_new_record
           self.id = nil
@@ -114,7 +119,7 @@ module Rspec
           yield m if block_given?
         end
       end
-      
+
     private
 
       @@model_id = 1000
